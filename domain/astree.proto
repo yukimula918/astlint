@@ -1,0 +1,88 @@
+syntax = "proto3";
+option  go_package = "domain/astree";
+package domain;
+
+// ASTFile combines the source content and syntax tree parsed from.
+message ASTFile {
+  Source Source = 1; // the code content to be parsed
+  ASTree Tree   = 2; // syntax tree parsed from Source
+};
+
+// Source models the source code content in program.
+message Source {
+  optional string RepoDir  = 1; // repository root directory path
+  optional string FilePath = 2; // relative path of source file to the repo directory
+  Language        Language = 3; // language of the source code to be analyzed
+  string          Content  = 4; // source code content to be analyzed
+};
+
+// Language the enum type of programming languages.
+enum Language {
+  NoLang      = 0;    // unknown language
+  C           = 1;    // C
+  Cpp         = 2;    // C++
+  Dart        = 3;    // Dart
+  Java        = 4;    // Java
+  Kotlin      = 5;    // Kotlin
+  Scala       = 6;    // Scala
+  Go          = 7;    // Golang
+  Python      = 8;    // Python
+  ObjectiveC  = 9;    // Objective-C
+  Swift       = 10;   // Swift
+  Javascript  = 11;   // JavaScript
+  Typescript  = 12;   // TypeScript
+  Ruby        = 13;   // Ruby
+  Rust        = 14;   // Rust
+};
+
+// ASTree the unified model of abstract syntax tree (AST).
+message ASTree {
+  Language         Language = 1; // language of the syntax tree content
+  ASTNode          Root     = 2; // root node
+  repeated ASTNode Nodes    = 3; // nodes in the syntax tree
+};
+
+// ASTNode represents a syntax node in ASTree, denoting a structural code snippet.
+message ASTNode {
+  uint32           ID       = 1; // index of the node in ASTree.Nodes
+  ASTNodeType      Type     = 2; // syntax node type
+  Position         Pos      = 3; // start position
+  Position         End      = 4; // end position
+  optional string  Text     = 5; // text of the node source
+  ASTEdge          Parent   = 6; // edge from its parent to this node
+  repeated ASTEdge Children = 7; // edge(s) from this node to its children
+};
+
+// Position denotes a character point in the source code content.
+message Position {
+  uint32 Offset = 1; // offset of the character in the string content
+  uint32 Line   = 2; // line number of the position, starting from 1
+  uint32 Column = 3; // column number of the position, starting from 1
+};
+
+// ASTEdge the edge linking from parent to one of its child.
+message ASTEdge {
+  uint32      Parent = 1; // index of parent node in the edge
+  uint32      Child  = 2; // index of child node in the edge
+  ASTEdgeType Type   = 3; // type of relations between Parent and Child
+};
+
+// ASTNodeType the types of syntax node (ASTNode).
+enum ASTNodeType {
+  // Unified syntax types
+  UastSyntaxError     = 0;
+  UastTransitionUnit  = 1;
+  UastIdentifier      = 2;
+  UastLiteral         = 3;
+  UastKeyword         = 4;
+  UastPunctuator      = 5;
+
+  // Golang language (7)
+
+};
+
+// ASTEdgeType the types of syntax node relations (ASTEdge).
+enum ASTEdgeType {
+  // Unified syntax relations
+  UastParentChild     = 0;
+};
